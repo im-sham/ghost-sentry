@@ -1,0 +1,32 @@
+[
+    {
+        "label": "tank",
+        "confidence": 0.82,
+        "bbox": [
+            0,
+            0,
+            0,
+            0
+        ],
+        "geo_location": [
+            33.95,
+            -118.42
+        ],
+        "sensor": "SAR"
+    },
+    {
+        "label": "truck",
+        "confidence": 0.91,
+        "bbox": [
+            0,
+            0,
+            0,
+            0
+        ],
+        "geo_location": [
+            33.94,
+            -118.41
+        ],
+        "sensor": "SAR"
+    }
+]

@@ -1,0 +1,5 @@
+[
+  {"label": "airplane", "confidence": 0.92, "bbox": [100, 150, 200, 250], "geo_location": [33.9425, -118.4081]},
+  {"label": "truck", "confidence": 0.78, "bbox": [300, 400, 380, 460], "geo_location": [33.9430, -118.4075]},
+  {"label": "car", "confidence": 0.88, "bbox": [500, 200, 560, 240], "geo_location": [33.9428, -118.4090]}
+]

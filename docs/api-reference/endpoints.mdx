@@ -1,0 +1,62 @@
+---
+title: "API Reference"
+description: "Ghost Sentry REST API Endpoints"
+---
+
+# Endpoints
+
+The Ghost Sentry API is built with FastAPI. It provides access to real-time tracks and system status.
+
+## Health Check
+
+<CodeGroup>
+```bash Request
+GET /health
+```
+```json Response
+{
+  "status": "ok"
+}
+```
+</CodeGroup>
+
+## Backend Tracks
+
+Retrieves the list of current detected tracks from the event log.
+
+<CodeGroup>
+```bash Request
+GET /tracks
+```
+```json Response
+[
+  {
+    "entity_id": "uuid-...",
+    "ontology": {
+      "platform_type": "Airplane"
+    },
+    ...
+  }
+]
+```
+</CodeGroup>
+
+## Cursor-on-Target (CoT)
+
+Streams detections in CoT XML format for ATAK integration.
+
+<CodeGroup>
+```bash Request
+GET /tracks/cot
+```
+```xml Response
+<?xml version="1.0" standalone="yes"?>
+<event version="2.0" uid="..." type="a-f-A" ...>
+  <point lat="34.0" lon="-118.0" ... />
+  <detail>
+    <contact callsign="GS-AIR"/>
+  </detail>
+</event>
+...
+```
+</CodeGroup>

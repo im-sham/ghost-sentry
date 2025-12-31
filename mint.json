@@ -1,0 +1,84 @@
+{
+    "name": "Ghost Sentry",
+    "logo": {
+        "light": "/logo/light.svg",
+        "dark": "/logo/dark.svg"
+    },
+    "favicon": "/favicon.png",
+    "colors": {
+        "primary": "#0D9488",
+        "light": "#2DD4BF",
+        "dark": "#0F766E",
+        "anchors": "#0D9488"
+    },
+    "topbarLinks": [
+        {
+            "name": "Support",
+            "url": "mailto:support@ghostsentry.com"
+        }
+    ],
+    "topbarCtaButton": {
+        "name": "GitHub",
+        "url": "https://github.com/example/ghost-sentry"
+    },
+    "tabs": [
+        {
+            "name": "Documentation",
+            "url": "docs"
+        },
+        {
+            "name": "API Reference",
+            "url": "api-reference"
+        }
+    ],
+    "anchors": [
+        {
+            "name": "Introduction",
+            "icon": "book-open",
+            "url": "introduction"
+        },
+        {
+            "name": "Architecture",
+            "icon": "layer-group",
+            "url": "architecture/overview"
+        },
+        {
+            "name": "Development",
+            "icon": "code",
+            "url": "development/setup"
+        },
+        {
+            "name": "Roadmap",
+            "icon": "map",
+            "url": "development/roadmap"
+        }
+    ],
+    "navigation": [
+        {
+            "group": "Getting Started",
+            "pages": [
+                "introduction",
+                "development/setup"
+            ]
+        },
+        {
+            "group": "Architecture",
+            "pages": [
+                "architecture/overview",
+                "architecture/lattice-integration"
+            ]
+        },
+        {
+            "group": "Development",
+            "pages": [
+                "development/roadmap"
+            ]
+        },
+        {
+            "group": "API Reference",
+            "pages": [
+                "api-reference/endpoints"
+            ]
+        }
+    ]
+}

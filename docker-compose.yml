@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./lattice_events.jsonl:/app/lattice_events.jsonl
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  web:
+    build:
+      context: ./web
+      dockerfile: ../deploy/web.Dockerfile
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api

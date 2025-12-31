@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@theme {
+  --color-lattice-bg: #0a0a0a;
+  --color-lattice-panel: #1a1a1a;
+  --color-lattice-border: #333333;
+  --color-lattice-primary: #00ff9d;
+  --color-lattice-accent: #00e5ff;
+  --color-lattice-alert: #ff3333;
+  --color-lattice-warning: #ffae00;
+
+  --font-mono: "JetBrains Mono", "Menlo", "Monaco", "Courier New", monospace;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-lattice-bg);
+    color: white;
+    font-family: var(--font-mono);
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+    overflow: hidden;
+  }
+}
+
+.leaflet-container {
+  background: #0a0a0a !important;
+  width: 100%;
+  height: 100%;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-lattice-border rounded;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-lattice-primary/50;
+}

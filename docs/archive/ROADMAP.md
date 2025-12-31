@@ -1,0 +1,19 @@
+# Ghost Sentry: Roadmap
+
+## Phase 1: MVP (Complete)
+- [x] Optical imagery processing (Sentinel-2).
+- [x] YOLOv8 tactical asset detection.
+- [x] Lattice-compatible data modeling.
+- [x] Autonomous cueing logic.
+- [x] CoT XML output for interoperability.
+- [x] TUI Operator Console.
+
+## Phase 2: Active ISR & Localized Fusion (Next)
+- [ ] **SAR Integration**: Add support for Sentinel-1 (SAR) imagery to enable all-weather monitoring.
+- [ ] **Edge Fusion**: Implement localized sensor fusion between optical and radar feeds.
+- [ ] **Degraded Mode**: Enhance resilience for operation in network-denied environments.
+
+## Phase 3: Advanced Autonomy
+- [ ] **Multi-Platform Cueing**: Enable direct tasking of autonomous assets (e.g., ALTIUS, Dive-LD) via Lattice Mesh.
+- [ ] **Behavior Analysis**: Detect anomalies in movement patterns (e.g., loitering, formation changes).
+- [ ] **Full Kill-Chain Integration**: Close the loop from detection to terminal engagement options within the Lattice environment.
