@@ -70,18 +70,28 @@ class TestTrackBuilder:
 class TestSentryLogic:
     """Tests for the autonomous cueing logic."""
     
+    @pytest.fixture(autouse=True)
+    def setup_test_db(self, monkeypatch, tmp_path):
+        """Setup a test database for each test."""
+        from ghost_sentry.core import db, sentry
+        test_db = tmp_path / "test_sentry.db"
+        monkeypatch.setattr(db, "DB_PATH", test_db)
+        # Reset the debounce cache for each test
+        sentry._recent_tasks.clear()
+        db.init_db()
+        yield
+    
     def test_high_priority_cueing(self):
         """Test that high-priority, high-confidence detections generate tasks."""
         detections = [
             Detection(label="airplane", confidence=0.92, bbox=(0,0,100,100), geo_location=(33.94, -118.40)),
         ]
         
-        with tempfile.NamedTemporaryFile(suffix=".jsonl", delete=False) as f:
-            connector = LatticeConnector(log_path=f.name)
-            stats = process_detections(detections, connector)
-            
-            assert stats["tracks"] == 1
-            assert stats["tasks"] == 1  # Airplane with 0.92 > 0.85 threshold
+        connector = LatticeConnector()
+        stats = process_detections(detections, connector)
+        
+        assert stats["tracks"] == 1
+        assert stats["tasks"] == 1  # Airplane with 0.92 > 0.85 threshold
     
     def test_low_confidence_no_task(self):
         """Test that low-confidence detections don't generate tasks."""
@@ -89,12 +99,11 @@ class TestSentryLogic:
             Detection(label="airplane", confidence=0.70, bbox=(0,0,100,100), geo_location=(33.94, -118.40)),
         ]
         
-        with tempfile.NamedTemporaryFile(suffix=".jsonl", delete=False) as f:
-            connector = LatticeConnector(log_path=f.name)
-            stats = process_detections(detections, connector)
-            
-            assert stats["tracks"] == 1
-            assert stats["tasks"] == 0  # 0.70 < 0.85 threshold
+        connector = LatticeConnector()
+        stats = process_detections(detections, connector)
+        
+        assert stats["tracks"] == 1
+        assert stats["tasks"] == 0  # 0.70 < 0.85 threshold
     
     def test_low_priority_no_task(self):
         """Test that low-priority labels don't generate tasks even with high confidence."""
@@ -102,12 +111,11 @@ class TestSentryLogic:
             Detection(label="car", confidence=0.95, bbox=(0,0,50,50), geo_location=(33.94, -118.40)),
         ]
         
-        with tempfile.NamedTemporaryFile(suffix=".jsonl", delete=False) as f:
-            connector = LatticeConnector(log_path=f.name)
-            stats = process_detections(detections, connector)
-            
-            assert stats["tracks"] == 1
-            assert stats["tasks"] == 0  # car is not in HIGH_PRIORITY_LABELS
+        connector = LatticeConnector()
+        stats = process_detections(detections, connector)
+        
+        assert stats["tracks"] == 1
+        assert stats["tasks"] == 0  # car is not in HIGH_PRIORITY_LABELS
 
 
 class TestCoTGeneration:
