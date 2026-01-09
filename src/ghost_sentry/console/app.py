@@ -2,8 +2,8 @@
 from textual.app import App, ComposeResult
 from textual.widgets import Header, Footer, DataTable, RichLog, Static
 from textual.containers import Horizontal, Vertical
-import json
-from pathlib import Path
+
+from ghost_sentry.core import db
 
 CSS = """
 #tracks-container {
@@ -32,22 +32,22 @@ CSS = """
 }
 """
 
+
 class SentryConsole(App):
-    """The Ghost Sentry operator console."""
     
     CSS = CSS
-    BINDINGS = [("q", "quit", "Quit"), ("r", "refresh", "Refresh"), ("c", "clear", "Clear")]
+    BINDINGS = [("q", "quit", "Quit"), ("r", "refresh", "Refresh")]
     
     def compose(self) -> ComposeResult:
         yield Header()
         yield Horizontal(
             Vertical(
-                Static("📡 Detected Tracks", classes="title"),
+                Static("Detected Tracks", classes="title"),
                 DataTable(id="tracks"),
                 id="tracks-container"
             ),
             Vertical(
-                Static("🎯 Cueing Tasks", classes="title"),
+                Static("Cueing Tasks", classes="title"),
                 RichLog(id="logs", markup=True),
                 id="logs-container"
             ),
@@ -56,56 +56,63 @@ class SentryConsole(App):
     
     def on_mount(self) -> None:
         table = self.query_one("#tracks", DataTable)
-        table.add_columns("ID", "Type", "Conf", "Lat", "Lon")
-        self.load_tracks()
+        table.add_columns("ID", "Type", "Conf", "Lat", "Lon", "State")
+        self.load_data()
     
-    def load_tracks(self) -> None:
+    def load_data(self) -> None:
         table = self.query_one("#tracks", DataTable)
         table.clear()
         
         log_widget = self.query_one("#logs", RichLog)
         log_widget.clear()
         
-        log = Path("lattice_events.jsonl")
+        db.init_db()
         
-        if log.exists():
-            for line in log.read_text().splitlines():
-                if not line.strip():
-                    continue
-                try:
-                    event = json.loads(line)
-                    if event["type"] == "track":
-                        t = event["data"]
-                        confidence = t.get("confidence", 0.0)
-                        lat = t['location']['position']['latitudeDegrees']
-                        lon = t['location']['position']['longitudeDegrees']
-                        table.add_row(
-                            t["entityId"][:8],
-                            t["ontology"]["platform_type"][:6],
-                            f"{confidence:.2f}",
-                            f"{lat:.2f}",
-                            f"{lon:.2f}"
-                        )
-                    elif event["type"] == "task":
-                        priority = event['data'].get('priority', 'MEDIUM')
-                        color = "red" if priority == "HIGH" else "yellow"
-                        log_widget.write(f"[{color}]● {event['data']['description']}[/{color}]")
-                except json.JSONDecodeError:
-                    continue
+        tracks = db.get_tracks()
+        for t in tracks:
+            try:
+                confidence = t.get("confidence", 0.0)
+                lat = t["location"]["position"]["latitudeDegrees"]
+                lon = t["location"]["position"]["longitudeDegrees"]
+                lifecycle = t.get("lifecycleState", "FIRM")
+                table.add_row(
+                    t["entityId"][:8],
+                    t["ontology"]["platform_type"][:6],
+                    f"{confidence:.2f}",
+                    f"{lat:.2f}",
+                    f"{lon:.2f}",
+                    lifecycle[:4]
+                )
+            except (KeyError, TypeError):
+                continue
+        
+        tasks = db.get_tasks()
+        for task in tasks:
+            try:
+                priority = task.get("data", {}).get("priority", "MEDIUM") if task.get("data") else "MEDIUM"
+                state = task.get("state", "pending")
+                description = task.get("data", {}).get("description", "Unknown task") if task.get("data") else "Unknown task"
+                
+                if priority == "HIGH":
+                    color = "red"
+                elif state == "completed":
+                    color = "green"
+                else:
+                    color = "yellow"
+                
+                state_icon = {"pending": "?", "assigned": ">", "in_progress": "~", "completed": "+", "cancelled": "x"}.get(state, "?")
+                log_widget.write(f"[{color}][{state_icon}] {description}[/{color}]")
+            except (KeyError, TypeError):
+                continue
     
     def action_refresh(self) -> None:
-        self.load_tracks()
-    
-    def action_clear(self) -> None:
-        """Clear the events log file and refresh."""
-        log = Path("lattice_events.jsonl")
-        if log.exists():
-            log.unlink()
-        self.load_tracks()
+        self.load_data()
+
 
 def main():
     app = SentryConsole()
     app.run()
+
 
 if __name__ == "__main__":
     main()

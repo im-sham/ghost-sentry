@@ -3,6 +3,7 @@ import sqlite3
 import json
 from pathlib import Path
 from datetime import datetime
+from typing import Optional
 
 DB_PATH = Path("ghost_sentry.db")
 
@@ -50,7 +51,7 @@ def init_db():
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_missions_created ON missions(created_at);")
         conn.commit()
 
-def add_event(event_type: str, data: dict, entity_id: str = None):
+def add_event(event_type: str, data: dict, entity_id: Optional[str] = None):
     """Add an event to the database."""
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
@@ -68,7 +69,7 @@ def get_tracks():
         rows = cursor.fetchall()
         return [json.loads(row[0]) for row in rows]
 
-def add_task(task_id: str, entity_id: str, task_type: str, data: dict = None, assigned_to: str = None):
+def add_task(task_id: str, entity_id: str, task_type: str, data: Optional[dict] = None, assigned_to: Optional[str] = None):
     """Add a task to the database."""
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
@@ -88,7 +89,7 @@ def update_task_state(task_id: str, state: str):
         )
         conn.commit()
 
-def get_tasks(state: str = None):
+def get_tasks(state: Optional[str] = None):
     """Retrieve tasks, optionally filtered by state."""
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
